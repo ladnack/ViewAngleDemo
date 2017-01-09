@@ -23,6 +23,49 @@ public class ScreenViewer : MonoBehaviour {
 
 	private GameObject screen;
 
+	public class CubeVertices
+	{
+		// Cubeの頂点を指定するためのenum
+		public enum vertices
+		{
+			A, B, C, D, E, F, G
+		};
+
+		public struct IndexOfVertex {
+			public int index1, index2, index3;
+
+			public IndexOfVertex(int index1, int index2, int index3) {
+				this.index1 = index1;
+				this.index2 = index2;
+				this.index3 = index3;
+			}
+		}
+
+		public static IndexOfVertex[] indexData = {
+			new IndexOfVertex(3, 9, 17),
+			new IndexOfVertex(2, 8, 22),
+			new IndexOfVertex(5, 11, 18),
+			new IndexOfVertex(4, 10, 21),
+			new IndexOfVertex(1, 16, 19),
+			new IndexOfVertex(0, 13, 23),
+			new IndexOfVertex(7, 15, 19),
+		};
+
+		public static IndexOfVertex GetIndexOf(vertices vert) {
+			return indexData[(int)vert];
+		}
+
+		public static int[] GetIndexArrayOf(vertices vert) {
+			var data = indexData[(int)vert];
+			int[] array = {
+				data.index1, data.index2, data.index3
+			};
+			return array;
+		}
+
+	}
+
+
 	// Use this for initialization
 	void Start () {
 		if (eyes != null) {
@@ -100,6 +143,8 @@ public class ScreenViewer : MonoBehaviour {
 			_vertices = _meshFilter.mesh.vertices;
 
 			// Screen上部４頂点を引伸ばす
+
+			/*
 			// 頂点A
 			_vertices [3].y += length;
 			_vertices [9].y += length;
@@ -119,7 +164,28 @@ public class ScreenViewer : MonoBehaviour {
 			_vertices [4].y += length;
 			_vertices [10].y += length;
 			_vertices [21].y += length;
+			*/
 
+			// 頂点A
+			foreach (int index in CubeVertices.GetIndexArrayOf (CubeVertices.vertices.A)) {
+				_vertices [index].y += length;
+			}
+
+			// 頂点B
+			foreach (int index in CubeVertices.GetIndexArrayOf (CubeVertices.vertices.B)) {
+				_vertices [index].y += length;
+			}
+			/*
+			// 頂点C
+			foreach (int index in CubeVertices.GetIndexArrayOf (CubeVertices.vertices.C)) {
+				_vertices [index].y += length;
+			}
+
+			// 頂点D
+			foreach (int index in CubeVertices.GetIndexArrayOf (CubeVertices.vertices.D)) {
+				_vertices [index].y += length;
+			}
+			*/
 			_meshFilter.mesh.vertices = _vertices;
 			_meshFilter.mesh.RecalculateBounds();
 
