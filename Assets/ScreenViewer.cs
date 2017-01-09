@@ -71,6 +71,57 @@ public class ScreenViewer : MonoBehaviour {
 			*/
 
 
+			// カメラからScreenまでの距離を求める（distance）
+
+			// 任意の角度に回転させた方向とScreenの延長が織り成す点までの距離を求める
+			float deg = 30.0f;
+			float distance2 = distance / Mathf.Cos (deg * Mathf.Deg2Rad);
+			Debug.Log ("distance: " + distance);
+			Debug.Log ("distance2: " + distance2);
+
+			// forwardに対して回転させたベクトルを求める
+			var angleForward = Quaternion.Euler (-deg, 0, 0) * eyes.transform.forward;
+
+			// Screenの端点となる点を求める
+			Vector3 firstPoint = eyes.transform.position;
+			var point = firstPoint + angleForward * distance2;
+			Debug.Log ("point: " + point);
+
+			// ApearCube (point);
+
+
+			// 頂点とpointの並行直線距離を求める
+			var d = Vector3.Distance(screen.transform.position, point);
+			var length = d - screen.transform.localScale.y / 2;
+			Debug.Log ("length: " + length);
+
+			MeshFilter _meshFilter = screen.GetComponent<MeshFilter>();
+			Vector3[] _vertices = new Vector3[24];
+			_vertices = _meshFilter.mesh.vertices;
+
+			// Screen上部４頂点を引伸ばす
+			// 頂点A
+			_vertices [3].y += length;
+			_vertices [9].y += length;
+			_vertices [17].y += length;
+
+			// 頂点B
+			_vertices [2].y += length;
+			_vertices [8].y += length;
+			_vertices [22].y += length;
+
+			// 頂点C
+			_vertices [5].y += length;
+			_vertices [11].y += length;
+			_vertices [18].y += length;
+
+			// 頂点D
+			_vertices [4].y += length;
+			_vertices [10].y += length;
+			_vertices [21].y += length;
+
+			_meshFilter.mesh.vertices = _vertices;
+			_meshFilter.mesh.RecalculateBounds();
 
 
 		}
@@ -103,6 +154,7 @@ public class ScreenViewer : MonoBehaviour {
 
 		this.screen = cube;
 
+		/*
 		// CubeのMeshFilterを取得
 		MeshFilter _meshFilter = cube.GetComponent<MeshFilter>();
 		// vertices（頂点）を取得
@@ -120,13 +172,17 @@ public class ScreenViewer : MonoBehaviour {
 		_vertices [22] = newVertex;
 
 		foreach (Vector3 vertex in _vertices) {
-			Debug.Log (vertex);
+			// Debug.Log (vertex);
+		}
+
+		foreach (int triangle in _meshFilter.mesh.triangles) {
+			// Debug.Log ("triangles: " + triangle);
 		}
 
 		_meshFilter.mesh.vertices = _vertices;
 		_meshFilter.mesh.RecalculateBounds();
+		*/
 	}
-
 
 
 
