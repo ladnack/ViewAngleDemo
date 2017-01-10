@@ -172,18 +172,22 @@ public class ScreenViewer : MonoBehaviour {
 			// ApearCube (point);
 			*/
 
-			var point = PointCos (eyes.transform.position, eyes.transform.forward, distance, 15, Direction.upward);
+			var upPoint = PointCos (eyes.transform.position, eyes.transform.forward, distance, 30, Direction.upward);
+			var upLength = Vector3.Distance(screen.transform.position, upPoint);
 
-			// 頂点とpointの並行直線距離を求める
-			var d = Vector3.Distance(screen.transform.position, point);
-			var length = d - screen.transform.localScale.y / 2;
-			// Debug.Log ("length: " + length);
+			var downePoint = PointCos (eyes.transform.position, eyes.transform.forward, distance, 60, Direction.downward);
+			var downLength = Vector3.Distance(screen.transform.position, downePoint);
 
+			var leftPoint = PointCos (eyes.transform.position, eyes.transform.forward, distance, 60, Direction.leftSide);
+			var leftLength = Vector3.Distance(screen.transform.position, leftPoint);
 
-			extendCubeTo (screen, CubeVertices.surface.upward, length);
-			extendCubeTo (screen, CubeVertices.surface.downward, length);
-			extendCubeTo (screen, CubeVertices.surface.leftSide, length);
-			extendCubeTo (screen, CubeVertices.surface.rightSide, length);
+			var rightPoint = PointCos (eyes.transform.position, eyes.transform.forward, distance, 60, Direction.rightSide);
+			var rightLength = Vector3.Distance(screen.transform.position, rightPoint);
+
+			extendCubeTo (screen, CubeVertices.surface.upward, upLength);
+			extendCubeTo (screen, CubeVertices.surface.downward, downLength);
+			extendCubeTo (screen, CubeVertices.surface.leftSide, leftLength);
+			extendCubeTo (screen, CubeVertices.surface.rightSide, rightLength);
 			//extendCubeTo (screen, CubeVertices.surface.forward, length);
 			//extendCubeTo (screen, CubeVertices.surface.backward, length);
 
@@ -245,6 +249,7 @@ public class ScreenViewer : MonoBehaviour {
 		_meshFilter.mesh.vertices = _vertices;
 		_meshFilter.mesh.RecalculateBounds();
 		*/
+
 	}
 
 	private Vector3 PointCos(Vector3 originA, Vector3 vectAC, float distanceAC, float degree, Direction direction) {
