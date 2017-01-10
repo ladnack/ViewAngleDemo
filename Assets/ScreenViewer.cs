@@ -28,7 +28,7 @@ public class ScreenViewer : MonoBehaviour {
 		// Cubeの頂点を指定するためのenum
 		public enum vertices
 		{
-			A, B, C, D, E, F, G
+			A, B, C, D, E, F, G, H
 		};
 
 		public struct IndexOfVertex {
@@ -46,9 +46,10 @@ public class ScreenViewer : MonoBehaviour {
 			new IndexOfVertex(2, 8, 22),
 			new IndexOfVertex(5, 11, 18),
 			new IndexOfVertex(4, 10, 21),
-			new IndexOfVertex(1, 16, 19),
+			new IndexOfVertex(1, 14, 16),
 			new IndexOfVertex(0, 13, 23),
 			new IndexOfVertex(7, 15, 19),
+			new IndexOfVertex(6, 12, 20)
 		};
 
 		public static IndexOfVertex GetIndexOf(vertices vert) {
@@ -63,6 +64,44 @@ public class ScreenViewer : MonoBehaviour {
 			return array;
 		}
 
+		public struct VerticesOfSurface {
+			public vertices vert1, vert2, vert3, vert4;
+
+			public VerticesOfSurface(vertices vert1, vertices vert2, vertices vert3, vertices vert4) {
+				this.vert1 = vert1;
+				this.vert2 = vert2;
+				this.vert3 = vert3;
+				this.vert4 = vert4;
+			}
+		}
+
+		public static VerticesOfSurface[] vertexData = {
+			new VerticesOfSurface(vertices.A, vertices.B, vertices.C, vertices.D),
+			new VerticesOfSurface(vertices.E, vertices.F, vertices.G, vertices.H),
+			new VerticesOfSurface(vertices.B, vertices.D, vertices.F, vertices.H),
+			new VerticesOfSurface(vertices.A, vertices.C, vertices.E, vertices.G),
+			new VerticesOfSurface(vertices.A, vertices.B, vertices.E, vertices.F),
+			new VerticesOfSurface(vertices.C, vertices.D, vertices.G, vertices.H)
+		};
+
+		// Cubeの面を指定するためのenum
+		public enum surface {
+			// 上下左右前後を表す
+			upward, downward, leftSide, rightSide, forward, backward
+		};
+
+		public static VerticesOfSurface GetVerticesOf(surface surf) {
+			return vertexData[(int)surf];
+		}
+
+		public static vertices[] GetVerticesArrayOf(surface surf) {
+			var data = vertexData[(int)surf];
+			vertices[] array = {
+				data.vert1, data.vert2, data.vert3, data.vert4
+			};
+			return array;
+		}
+
 	}
 
 
@@ -72,7 +111,7 @@ public class ScreenViewer : MonoBehaviour {
 			
 			// 初期位置を設定する
 			eyes.transform.position = new Vector3(0f, 0f, 0f);
-			Debug.Log ("eyes.transform.position: " + eyes.transform.position);
+			// Debug.Log ("eyes.transform.position: " + eyes.transform.position);
 
 			/*
 			// カメラ正面方向を取得
@@ -113,7 +152,7 @@ public class ScreenViewer : MonoBehaviour {
 			CreateObjectAroundCamaraForAngle (eyes, 0, -30, 0);
 			*/
 
-
+			/*
 			// カメラからScreenまでの距離を求める（distance）
 
 			// 任意の角度に回転させた方向とScreenの延長が織り成す点までの距離を求める
@@ -131,64 +170,22 @@ public class ScreenViewer : MonoBehaviour {
 			Debug.Log ("point: " + point);
 
 			// ApearCube (point);
+			*/
 
+			var point = PointCos (eyes.transform.position, eyes.transform.forward, distance, 15, Direction.upward);
 
 			// 頂点とpointの並行直線距離を求める
 			var d = Vector3.Distance(screen.transform.position, point);
 			var length = d - screen.transform.localScale.y / 2;
-			Debug.Log ("length: " + length);
+			// Debug.Log ("length: " + length);
 
-			MeshFilter _meshFilter = screen.GetComponent<MeshFilter>();
-			Vector3[] _vertices = new Vector3[24];
-			_vertices = _meshFilter.mesh.vertices;
 
-			// Screen上部４頂点を引伸ばす
-
-			/*
-			// 頂点A
-			_vertices [3].y += length;
-			_vertices [9].y += length;
-			_vertices [17].y += length;
-
-			// 頂点B
-			_vertices [2].y += length;
-			_vertices [8].y += length;
-			_vertices [22].y += length;
-
-			// 頂点C
-			_vertices [5].y += length;
-			_vertices [11].y += length;
-			_vertices [18].y += length;
-
-			// 頂点D
-			_vertices [4].y += length;
-			_vertices [10].y += length;
-			_vertices [21].y += length;
-			*/
-
-			// 頂点A
-			foreach (int index in CubeVertices.GetIndexArrayOf (CubeVertices.vertices.A)) {
-				_vertices [index].y += length;
-			}
-
-			// 頂点B
-			foreach (int index in CubeVertices.GetIndexArrayOf (CubeVertices.vertices.B)) {
-				_vertices [index].y += length;
-			}
-			/*
-			// 頂点C
-			foreach (int index in CubeVertices.GetIndexArrayOf (CubeVertices.vertices.C)) {
-				_vertices [index].y += length;
-			}
-
-			// 頂点D
-			foreach (int index in CubeVertices.GetIndexArrayOf (CubeVertices.vertices.D)) {
-				_vertices [index].y += length;
-			}
-			*/
-			_meshFilter.mesh.vertices = _vertices;
-			_meshFilter.mesh.RecalculateBounds();
-
+			extendCubeTo (screen, CubeVertices.surface.upward, length);
+			extendCubeTo (screen, CubeVertices.surface.downward, length);
+			extendCubeTo (screen, CubeVertices.surface.leftSide, length);
+			extendCubeTo (screen, CubeVertices.surface.rightSide, length);
+			//extendCubeTo (screen, CubeVertices.surface.forward, length);
+			//extendCubeTo (screen, CubeVertices.surface.backward, length);
 
 		}
 	}
@@ -250,6 +247,88 @@ public class ScreenViewer : MonoBehaviour {
 		*/
 	}
 
+	private Vector3 PointCos(Vector3 originA, Vector3 vectAC, float distanceAC, float degree, Direction direction) {
+		// 三角形ABCを考える
+		// A、Cがわかっている時、角ACBが直角をなすように角BAC＝θに従って、点Bの位置を求める
 
+		// degreeは0〜90に設定する
+		if (degree <= 0 || 90 <= degree) {
+			return Vector3.zero;
+		}
+
+		// 距離ABをcosθを利用して求める
+		float distanceAB = distanceAC / Mathf.Cos (degree * Mathf.Deg2Rad);
+
+		Vector3 vectAB = Vector3.zero;
+
+		// ABベクトルを求める
+		switch (direction)
+		{
+		case Direction.upward:
+			vectAB = Quaternion.Euler (-degree, 0, 0) * vectAC;
+			break;
+		case Direction.downward:
+			vectAB = Quaternion.Euler (degree, 0, 0) * vectAC;
+			break;
+		case Direction.leftSide:
+			vectAB = Quaternion.Euler (0, degree, 0) * vectAC;
+			break;
+		case Direction.rightSide:
+			vectAB = Quaternion.Euler (0, -degree, 0) * vectAC;
+			break;
+		default:
+			break;
+		}
+
+		// 点Bを求める
+		var pointB = originA + vectAB * distanceAB;
+
+		return pointB;
+	}
+
+	private enum Direction {
+		// 上下左右を表す
+		upward, downward, leftSide, rightSide
+	}
+
+	private void extendCubeTo(GameObject cube, CubeVertices.surface surface, float length) {
+		MeshFilter _meshFilter = cube.GetComponent<MeshFilter>();
+		Vector3[] _vertices = new Vector3[24];
+		_vertices = _meshFilter.mesh.vertices;
+
+		// Cube面の４頂点を引伸ばす
+
+		foreach (CubeVertices.vertices vert in CubeVertices.GetVerticesArrayOf(surface)) {
+			
+			foreach (int index in CubeVertices.GetIndexArrayOf (vert)) {
+				switch (surface)
+				{
+				case CubeVertices.surface.upward:
+					_vertices [index].y = length;
+					break;
+				case CubeVertices.surface.downward:
+					_vertices [index].y = -length;
+					break;
+				case CubeVertices.surface.leftSide:
+					_vertices [index].x = length;
+					break;
+				case CubeVertices.surface.rightSide:
+					_vertices [index].x = -length;
+					break;
+				case CubeVertices.surface.forward:
+					_vertices [index].z = length;
+					break;
+				case CubeVertices.surface.backward:
+					_vertices [index].z = -length;
+					break;
+				default:
+					break;
+				}
+			}
+		}
+
+		_meshFilter.mesh.vertices = _vertices;
+		_meshFilter.mesh.RecalculateBounds();
+	}
 
 }
