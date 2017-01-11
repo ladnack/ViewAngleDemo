@@ -1,25 +1,11 @@
-﻿using UnityEngine;
+﻿
+using UnityEngine;
 using System.Collections;
 
 public class ScreenViewer : MonoBehaviour {
 
 	public Camera eyes;
 	public float distance = 1.0f;
-
-	public Vdata Klog;
-
-	[System.Serializable]//表示
-	public class Vdata//[Vector3]型のステータス一覧
-	{
-		public Vector3 A;//奥右上
-		public Vector3 B;//奥左上
-		public Vector3 C;//手前右上
-		public Vector3 D;//手前左上
-		public Vector3 E;//奥右下
-		public Vector3 F;//奥左下
-		public Vector3 G;//手前右下
-		public Vector3 H;//手前左下
-	}
 
 	private GameObject screen;
 
@@ -56,6 +42,7 @@ public class ScreenViewer : MonoBehaviour {
 			return indexData[(int)vert];
 		}
 
+		// 指定した頂点の3つのindexを配列で返す
 		public static int[] GetIndexArrayOf(vertices vert) {
 			var data = indexData[(int)vert];
 			int[] array = {
@@ -94,6 +81,7 @@ public class ScreenViewer : MonoBehaviour {
 			return vertexData[(int)surf];
 		}
 
+		// 指定した面に属する4つの頂点を配列で返す
 		public static vertices[] GetVerticesArrayOf(surface surf) {
 			var data = vertexData[(int)surf];
 			vertices[] array = {
@@ -140,36 +128,16 @@ public class ScreenViewer : MonoBehaviour {
 			*/
 
 			// カメラ正面にオブジェクトを配置
-			CreateObjectAroundCamaraForAngle (eyes, 0, 0, 0);
+			CreateObjectAroundCamaraForAngle (eyes, 0f, 0f, 0f);
 
 			/*
 			// カメラ正面上下にオブジェクトを配置
-			CreateObjectAroundCamaraForAngle (eyes, 30, 0, 0);
-			CreateObjectAroundCamaraForAngle (eyes, -30, 0, 0);
+			CreateObjectAroundCamaraForAngle (eyes, 30f, 0f, 0f);
+			CreateObjectAroundCamaraForAngle (eyes, -30f, 0f, 0f);
 
 			// カメラ正面左右にオブジェクトを配置
-			CreateObjectAroundCamaraForAngle (eyes, 0, 30, 0);
-			CreateObjectAroundCamaraForAngle (eyes, 0, -30, 0);
-			*/
-
-			/*
-			// カメラからScreenまでの距離を求める（distance）
-
-			// 任意の角度に回転させた方向とScreenの延長が織り成す点までの距離を求める
-			float deg = 30.0f;
-			float distance2 = distance / Mathf.Cos (deg * Mathf.Deg2Rad);
-			Debug.Log ("distance: " + distance);
-			Debug.Log ("distance2: " + distance2);
-
-			// forwardに対して回転させたベクトルを求める
-			var angleForward = Quaternion.Euler (-deg, 0, 0) * eyes.transform.forward;
-
-			// Screenの端点となる点を求める
-			Vector3 firstPoint = eyes.transform.position;
-			var point = firstPoint + angleForward * distance2;
-			Debug.Log ("point: " + point);
-
-			// ApearCube (point);
+			CreateObjectAroundCamaraForAngle (eyes, 0f, 30f, 0f);
+			CreateObjectAroundCamaraForAngle (eyes, 0f, -30f, 0f);
 			*/
 
 			var upPoint = PointCos (eyes.transform.position, eyes.transform.forward, distance, 30, Direction.upward);
@@ -199,8 +167,7 @@ public class ScreenViewer : MonoBehaviour {
 
 		if (Input.GetKeyDown (KeyCode.Space)) {
 			Debug.Log ("Space key was pressed.");
-			MeshFilter _meshFilter = screen.GetComponent<MeshFilter>();
-			_meshFilter.mesh.RecalculateBounds();
+			//...
 		}
 	}
 
@@ -210,46 +177,18 @@ public class ScreenViewer : MonoBehaviour {
 		// forwardに対して回転させたベクトルを求める
 		var angleForward = Quaternion.Euler (x, y, z) * cam.transform.forward;
 		Vector3 objPosition = cam.transform.position + angleForward * distance;
-		ApearCube (objPosition);
+		ApearCube (objPosition, cam.transform.forward);
 	}
 
 	// Cubeを生成する
-	private void ApearCube(Vector3 pos) {
+	private void ApearCube(Vector3 pos, Vector3 forward) {
 		var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
 		cube.transform.position = pos;
-		// cube.transform.localScale = new Vector3 (1, 1, 0);
+		// 任意の方向に対して、そのベクトルに垂直になるように角度を調整する
+		cube.transform.forward = forward;
 
+		cube.name = "Screen";
 		this.screen = cube;
-
-		/*
-		// CubeのMeshFilterを取得
-		MeshFilter _meshFilter = cube.GetComponent<MeshFilter>();
-		// vertices（頂点）を取得
-		Vector3[] _vertices = new Vector3[24];
-		// Debug.Log (_vertices.Length);	// 24
-
-		for (int i = 0; i < _meshFilter.mesh.vertices.Length; i++) {
-			_vertices [i] = _meshFilter.mesh.vertices [i];
-		}
-
-		Vector3 newVertex = _vertices [2] * 2; 
-
-		_vertices [2] = newVertex;
-		_vertices [8] = newVertex;
-		_vertices [22] = newVertex;
-
-		foreach (Vector3 vertex in _vertices) {
-			// Debug.Log (vertex);
-		}
-
-		foreach (int triangle in _meshFilter.mesh.triangles) {
-			// Debug.Log ("triangles: " + triangle);
-		}
-
-		_meshFilter.mesh.vertices = _vertices;
-		_meshFilter.mesh.RecalculateBounds();
-		*/
-
 	}
 
 	private Vector3 PointCos(Vector3 originA, Vector3 vectAC, float distanceAC, float degree, Direction direction) {
