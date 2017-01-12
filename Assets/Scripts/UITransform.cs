@@ -7,6 +7,9 @@ public class UITransform : MonoBehaviour {
 
 	public float distance = 0.0f;
 
+	public float canvasWidth = 0.0f;
+	public float canvasHeight = 0.0f;
+
 	// Use this for initialization
 	void Start () {
 		if (_camera == null) {
@@ -36,9 +39,9 @@ public class UITransform : MonoBehaviour {
 		var _canvas = GameObject.Find("Canvas");
 		_canvas.transform.position = pos;
 
-		// posのSetは以下も同じ
-		// var rectTransform = _canvas.GetComponent<RectTransform> ();
-		// rectTransform.position = pos;
+		// 
+		RectTransform rectTransform = _canvas.GetComponent<RectTransform> ();
+		rectTransform.sizeDelta = new Vector2 (canvasWidth, canvasHeight);
 
 		// 任意の方向に対して、そのベクトルに垂直になるように角度を調整する
 		_canvas.transform.forward = forward;
