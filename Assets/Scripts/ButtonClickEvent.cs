@@ -30,16 +30,29 @@ public class ButtonClickEvent : MonoBehaviour {
 
 	void OnSlide (float value)
 	{
-		Debug.Log (value);
+		// Debug.Log (value);
 
+		var cam = GameObject.Find ("Main Camera");
+
+		// Screenの位置を変更する
 		var screen = GameObject.Find ("Screen");
 		var screenPosition = screen.transform.position;
 		var pos1 = new Vector3 (screenPosition.x, screenPosition.y, value);
 		screen.transform.position = pos1;
 
+		// Canvasの位置をScreenの少し手前になるように変更する
 		var canvas = GameObject.Find ("Canvas");
+
+		var preDistance = Vector3.Distance (cam.transform.position, canvas.transform.position);
+
 		var pos2 = new Vector3 (pos1.x, pos1.y, pos1.z - 0.51f);
 		canvas.transform.position = pos2;
+
+		// CanvasのScaleをカメラとの距離に合わせて変更する
+		var preScale = canvas.transform.localScale.x;
+		var newScale = preScale * pos2.z / preDistance;
+		canvas.transform.localScale = new Vector3 (newScale, newScale, newScale);
+
 	}
 
 	void ShowLog ()
