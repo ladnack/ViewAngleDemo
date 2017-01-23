@@ -12,6 +12,7 @@ public class UITransform : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		
 		if (_camera == null) {
 			_camera = GameObject.FindGameObjectWithTag("Main Camera").GetComponent<Camera>();
 		}
