@@ -63,6 +63,7 @@ public class ColorFade : MonoBehaviour {
 			_button.colors = colors;
 			Debug.Log ("Update alpha = " + _color.a);
 			yield return null;
+			// yield return new WaitForSeconds(0.1f);
 		}
 	}
 
