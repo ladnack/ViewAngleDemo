@@ -46,9 +46,9 @@ public class ColorFade : MonoBehaviour {
 		}
 	}
 
-
+	// コルーチンを用いてフェードさせる
 	IEnumerator Fade() {
-		for (float f = 1f; f >= 0; f -= 0.1f) {
+		for (float f = 1f; f >= 0; f -= 0.01f) {
 			/*
 			Color _color = _renderer.material.color;
 			_color.a = f;
