@@ -37,6 +37,10 @@ public class UICollision : MonoBehaviour {
 		// トリガー対象の色をランダムに変更する
 		ChangeObjectColorRandom(UIobj);
 
+		if (UIobj.GetComponent<Button>() != null) {
+			UIobj.GetComponent<Button> ().onClick.Invoke ();
+		}
+
 	}
 
 	private void OnTriggerStay(Collider collider) {
