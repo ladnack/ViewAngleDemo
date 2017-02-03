@@ -19,6 +19,7 @@ public class UICollision : MonoBehaviour {
 	private void OnCollisionEnter(Collision collision) {
 		Debug.Log ("On Collision Enter!");
 
+
 		// 衝突したGameObjectを取得
 		var UIobj = collision.gameObject;
 		// 衝突対象の色をランダムに変更する

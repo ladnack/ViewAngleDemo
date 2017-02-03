@@ -22,5 +22,6 @@ public class Translate : MonoBehaviour {
 		if (Input.GetKey (KeyCode.DownArrow)) {
 			obj.transform.position -= new Vector3 (0f, 0f, rate);
 		}
+
 	}
 }
