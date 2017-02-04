@@ -18,15 +18,13 @@ public class ShowMultiSizeCanvas : MonoBehaviour {
 			mainCamera = GameObject.Find ("Main Camera").GetComponent<Camera> ();
 		}
 
-		Canvas canvas = CreateCanvasObject ().GetComponent<Canvas> ();
-		// CanvasをMainCamera正面に配置
-		canvas.renderMode = RenderMode.ScreenSpaceCamera;
-		canvas.worldCamera = mainCamera;
-		// Canvasのsizeを調整
-		//canvas.planeDistance = 10.0f;
-		canvas.renderMode = RenderMode.WorldSpace;
+		//Canvas canvas = CreateCanvasObject ().GetComponent<Canvas> ();
+		Canvas canvas = GameObject.Find("Canvas_sub").GetComponent<Canvas>();
 
-		// 距離を設定し、それに対応してAutoSizingする（拡張メソッド）
+		// CanvasをMainCamera正面に配置
+		canvas.ReconfigureToScreenToWorldSpace(mainCamera, 10.0f);
+
+		// 距離を設定し、それに対応してAutoSizingする
 		canvas.AutoSizingFor(10.0f);
 
 		// 水平方向に指定した視野角にスケーリングする
@@ -68,8 +66,17 @@ public class ShowMultiSizeCanvas : MonoBehaviour {
 // Canvasクラスの機能拡張
 static class CanvasExtensions {
 
+	public static void ReconfigureToScreenToWorldSpace(this Canvas canvas, Camera camera, float distance) {
+		canvas.renderMode = RenderMode.ScreenSpaceCamera;
+		canvas.worldCamera = camera;
+		// Canvasのsizeを調整
+		canvas.planeDistance = distance;
+		canvas.renderMode = RenderMode.WorldSpace;
+
+	}
+
 	public static void AutoSizingFor(this Canvas canvas, float distance) {
-		// Main Cameraからの距離をdistanceに変更（Cameraのpositionが（0, 0, 0）の時）
+		// MainCameraからの距離をdistanceに変更（Cameraのpositionが（0, 0, 0）の時）
 		canvas.transform.Translate(0f, 0f, distance - canvas.transform.position.z);
 		// distanceに基づいて一定の比率でscaleを調整
 		var scale = distance / canvas.planeDistance * canvas.transform.localScale.x;
