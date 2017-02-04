@@ -5,11 +5,8 @@ using UnityEngine.UI;
 public class ShowMultiSizeCanvas : MonoBehaviour {
 
 	public Camera mainCamera;
-
-	// Canvasのscale
-	private float scale;
-	// CanvasとCameraの距離
-	private float distance;
+	public float horizontalDegree = 30.0f;
+	public float verticalDegree = 30.0f;
 
 
 	// Use this for initialization
@@ -31,10 +28,11 @@ public class ShowMultiSizeCanvas : MonoBehaviour {
 
 		// 距離を設定し、それに対応してAutoSizingする（拡張メソッド）
 		canvas.AutoSizingFor(10.0f);
-		distance = Vector3.Distance (canvas.transform.position, mainCamera.transform.position);
-		scale = canvas.transform.localScale.x;
 
-		Debug.Log (distance + ", " + scale); 
+		// 水平方向に指定した視野角にスケーリングする
+		canvas.HorizontalRextScaling (horizontalDegree);
+		// 垂直方向に指定した視野角にスケーリングする
+		canvas.VerticalRextScaling (verticalDegree);
 
 	}
 
@@ -65,9 +63,6 @@ public class ShowMultiSizeCanvas : MonoBehaviour {
 	}
 
 
-
-
-
 }
 
 // Canvasクラスの機能拡張
@@ -79,6 +74,62 @@ static class CanvasExtensions {
 		// distanceに基づいて一定の比率でscaleを調整
 		var scale = distance / canvas.planeDistance * canvas.transform.localScale.x;
 		canvas.transform.localScale = new Vector3 (scale, scale, scale);
+
+	}
+
+	public static void HorizontalRextScaling(this Canvas canvas, float degree) {
+		// 三角形ABCを考える
+		// A、Cがわかっている時、角ACBが直角をなすように角BAC＝θに従って、点Bの位置を求める
+
+		// degreeは0〜90に設定する
+		if (degree <= 0 || 90 <= degree) { return; }
+
+		// アタッチしたMain Cameraを取得（Camera位置がスケーリングの基準となる）
+		Camera _camera = canvas.worldCamera;
+
+		Vector3 vectAC = _camera.transform.forward;
+		float distanceAC = Vector3.Distance (_camera.transform.position, canvas.transform.position);
+
+		// 距離ABをcosθを利用して求める
+		float distanceAB = distanceAC / Mathf.Cos (degree * Mathf.Deg2Rad);
+		Vector3 vectAB = Quaternion.Euler (0f, degree, 0f) * vectAC;
+
+		// 点Bを求める
+		Vector3 pointB = _camera.transform.position + vectAB * distanceAB;
+
+		// 設定するwidthは距離ABの2倍 -> scale対応させる
+		float width = Vector3.Distance(canvas.transform.position, pointB) * 2f * (1 / canvas.transform.localScale.x);
+
+		RectTransform rectTransform = canvas.GetComponent<RectTransform> ();
+		rectTransform.sizeDelta = new Vector2 (width, rectTransform.rect.height);
+
+	}
+
+	public static void VerticalRextScaling(this Canvas canvas, float degree) {
+		// 三角形ABCを考える
+		// A、Cがわかっている時、角ACBが直角をなすように角BAC＝θに従って、点Bの位置を求める
+
+		// degreeは0〜90に設定する
+		if (degree <= 0 || 90 <= degree) { return; }
+
+		// アタッチしたMain Cameraを取得（Camera位置がスケーリングの基準となる）
+		Camera _camera = canvas.worldCamera;
+
+		Vector3 vectAC = _camera.transform.forward;
+		float distanceAC = Vector3.Distance (_camera.transform.position, canvas.transform.position);
+
+		// 距離ABをcosθを利用して求める
+		float distanceAB = distanceAC / Mathf.Cos (degree * Mathf.Deg2Rad);
+		Vector3 vectAB = Quaternion.Euler (degree, 0f, 0f) * vectAC;
+
+		// 点Bを求める
+		Vector3 pointB = _camera.transform.position + vectAB * distanceAB;
+
+		// 設定するwidthは距離ABの2倍 -> scale対応させる
+		float height = Vector3.Distance(canvas.transform.position, pointB) * 2f * (1 / canvas.transform.localScale.x);
+
+		RectTransform rectTransform = canvas.GetComponent<RectTransform> ();
+		rectTransform.sizeDelta = new Vector2 (rectTransform.rect.width, height);
 
 	}
 
