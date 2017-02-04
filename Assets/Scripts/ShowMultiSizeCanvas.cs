@@ -29,14 +29,12 @@ public class ShowMultiSizeCanvas : MonoBehaviour {
 		//canvas.planeDistance = 10.0f;
 		canvas.renderMode = RenderMode.WorldSpace;
 
-		// 距離を設定し、それに対応してAutoSizingする
-		distance = 10.0f;
-		scale = distance / canvas.planeDistance * canvas.transform.localScale.x;
+		// 距離を設定し、それに対応してAutoSizingする（拡張メソッド）
+		canvas.AutoSizingFor(10.0f);
+		distance = Vector3.Distance (canvas.transform.position, mainCamera.transform.position);
+		scale = canvas.transform.localScale.x;
 
-		// Canvasの位置を動かす
-		canvas.transform.Translate(0f, 0f, distance - canvas.transform.position.z);
-		canvas.transform.localScale = new Vector3 (scale, scale, scale);
-
+		Debug.Log (distance + ", " + scale); 
 
 	}
 
@@ -67,5 +65,21 @@ public class ShowMultiSizeCanvas : MonoBehaviour {
 	}
 
 
+
+
+
+}
+
+// Canvasクラスの機能拡張
+static class CanvasExtensions {
+
+	public static void AutoSizingFor(this Canvas canvas, float distance) {
+		// Main Cameraからの距離をdistanceに変更（Cameraのpositionが（0, 0, 0）の時）
+		canvas.transform.Translate(0f, 0f, distance - canvas.transform.position.z);
+		// distanceに基づいて一定の比率でscaleを調整
+		var scale = distance / canvas.planeDistance * canvas.transform.localScale.x;
+		canvas.transform.localScale = new Vector3 (scale, scale, scale);
+
+	}
 
 }
