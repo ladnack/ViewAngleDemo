@@ -252,7 +252,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a549f997e550144cbb8d66b4ec7ba5d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rotateX: 0.1
+  rotateX: 1
   rotateY: 1
 --- !u!1 &1672845006
 GameObject:
@@ -266,7 +266,7 @@ GameObject:
   - 65: {fileID: 1672845008}
   - 23: {fileID: 1672845007}
   m_Layer: 0
-  m_Name: Cube
+  m_Name: Cube1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -345,7 +345,7 @@ GameObject:
   - 65: {fileID: 1716973365}
   - 23: {fileID: 1716973364}
   m_Layer: 0
-  m_Name: Cube (1)
+  m_Name: Cube2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -424,7 +424,7 @@ GameObject:
   - 65: {fileID: 1997160778}
   - 23: {fileID: 1997160777}
   m_Layer: 0
-  m_Name: Cube (2)
+  m_Name: Cube3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

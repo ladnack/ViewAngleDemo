@@ -12,12 +12,25 @@ public class Raycasting : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		mainCamera = Camera.main;
+
+
 	}
 	
 	// Update is called once per frame
 	void Update () {
 
 		CameraRotate ();
+
+		RaycastHit hit;
+		Ray ray = new Ray(mainCamera.transform.position, mainCamera.transform.forward);
+
+		if (Physics.Raycast(ray, out hit)) {
+			Transform objectHit = hit.transform;
+
+			// Do something with the object that was hit by the raycast.
+			Debug.Log ("Hit " + objectHit.gameObject);
+
+		}
 
 
 	}
